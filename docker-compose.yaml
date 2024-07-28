@@ -10,7 +10,7 @@ services:
     restart: on-failure
     volumes:
       - ./.env:/app/src/.env
-      - ./logs/nginx/json-logs.json:/app/src/logs/auth_service.json
+      - ./logs/nginx/json-logs.json:/app/src/logs/async_api.json
     env_file:
       - .env
     depends_on:
@@ -182,6 +182,15 @@ services:
       - "27017"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    networks:
+      - elk_default
+
+  filebeat:
+    image: elastic/filebeat:8.10.2
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./logs/nginx:/var/log/nginx:ro
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
     networks:
       - elk_default
 
