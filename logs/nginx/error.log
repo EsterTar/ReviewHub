@@ -1,0 +1,8 @@
+2024/07/28 15:30:55 [emerg] 1#1: open() "/var/log/nginx/json-logs.json" failed (21: Is a directory)
+2024/07/28 15:41:43 [error] 20#20: *2 open() "/data/backend" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /backend HTTP/1.1", host: "localhost"
+2024/07/28 15:41:43 [error] 20#20: *2 open() "/data/404.html" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /backend HTTP/1.1", host: "localhost"
+2024/07/28 15:41:44 [error] 20#20: *2 open() "/data/404.html" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/backend"
+2024/07/28 15:42:25 [error] 20#20: *2 open() "/data/backend" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /backend HTTP/1.1", host: "localhost"
+2024/07/28 15:42:25 [error] 20#20: *2 open() "/data/404.html" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /backend HTTP/1.1", host: "localhost"
+2024/07/28 15:42:40 [error] 20#20: *2 open() "/data/docs" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /docs HTTP/1.1", host: "localhost"
+2024/07/28 15:42:40 [error] 20#20: *2 open() "/data/404.html" failed (2: No such file or directory), client: 192.168.65.1, server: _, request: "GET /docs HTTP/1.1", host: "localhost"

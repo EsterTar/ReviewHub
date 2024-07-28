@@ -1,0 +1,15 @@
+pydantic==2.7.2
+pydantic-settings==2.3.4
+uvicorn==0.30.0
+Scrapy==2.11.2
+setuptools==68.2.0
+pymongo==4.7.2
+loguru==0.7.2
+starlette==0.37.2
+fastapi==0.111.0
+gunicorn==22.0.0
+pytest==8.2.2
+pytest-asyncio==0.23.7
+aiohttp==3.9.5
+python-dotenv==1.0.1
+idna==3.7

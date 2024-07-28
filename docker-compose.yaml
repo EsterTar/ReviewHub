@@ -1,0 +1,191 @@
+version: "3.9"
+
+services:
+
+  fastapi:
+    build: .
+    command: "gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app --bind ${APP_HOST}:${APP_PORT}"
+    expose:
+      - "${APP_PORT}"
+    restart: on-failure
+    volumes:
+      - ./.env:/app/src/.env
+      - ./logs/nginx/json-logs.json:/app/src/logs/auth_service.json
+    env_file:
+      - .env
+    depends_on:
+      - mongos1
+      - mongos2
+    networks:
+      - elk_default
+
+  nginx:
+    image: "nginx:1.25.3"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./configs:/etc/nginx/conf.d:ro
+      - ./data/html:/data/html:ro
+      - ./logs/nginx/:/var/log/nginx/
+    depends_on:
+      - fastapi
+    ports:
+      - "80:80"
+    networks:
+      - elk_default
+
+  mongors1n1:
+    container_name: mongors1n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - 27017:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data1:/data/db
+    networks:
+      - elk_default
+
+  mongors1n2:
+    container_name: mongors1n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - 27027:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data2:/data/db
+    networks:
+      - elk_default
+
+  mongors1n3:
+    container_name: mongors1n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - 27037:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data3:/data/db
+    networks:
+      - elk_default
+
+  mongors2n1:
+    container_name: mongors2n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - 27047:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data4:/data/db
+    networks:
+      - elk_default
+
+  mongors2n2:
+    container_name: mongors2n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - 27057:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data5:/data/db
+    networks:
+      - elk_default
+
+  mongors2n3:
+    container_name: mongors2n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - 27067:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data6:/data/db
+    networks:
+      - elk_default
+
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config1:/data/db
+    networks:
+      - elk_default
+
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config2:/data/db
+    networks:
+      - elk_default
+
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config3:/data/db
+    networks:
+      - elk_default
+
+  mongos1:
+    container_name: mongos1
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    ports:
+      - 27019:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - elk_default
+
+  mongos2:
+    container_name: mongos2
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    ports:
+      - 27020:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - elk_default
+
+
+networks:
+  elk_default:
+    name: elk_name
